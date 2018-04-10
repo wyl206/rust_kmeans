@@ -1,0 +1,7 @@
+[package]
+name = "kmeans"
+version = "0.1.0"
+authors = ["wangyl"]
+
+[dependencies]
+rand = { git = "https://github.com/rust-lang-nursery/rand"}
