@@ -10,23 +10,23 @@ struct kmeans {
 }
 
 impl kmeans {
-    fn compute_means(&self, &data: &Vec<i32>) -> i32 {
+    fn compute_means(&self, da: &Vec<i32>) -> i32 {
         let mut sum: i32 = 0;
-        for i in data.iter() {
+        for i in da.iter() {
             sum += i.pow(2);
         }
         sum
     }
 
-    fn compute_sse(&self, sse: i32, data: &Vec<i32>)  {
+    fn compute_sse(&self)  {
     
     }
 
-    fn compute_centroid(data: &Vec<i32>)  {
+    fn compute_centroid(&self)  {
         
     }
 
-    fn converge(sse: i32)  {
+    fn converge(&self)  {
 
     }
 }
