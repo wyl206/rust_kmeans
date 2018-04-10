@@ -2,10 +2,11 @@
 use std::collections::BTreeMap;
 
 struct kmeans {
-    k: usize,
+    k: u8,
     sse: Vec<i32>,
-    center: BTreeMap<Vec<i32>, >,
-
+    center: BTreeMap<u8, Vec<i32>>,
+    data: BTreeMap<u32, Vec<i32>>,
+    class: Vec<u8>,
 }
 
 impl kmeans {
@@ -17,17 +18,20 @@ impl kmeans {
         sum
     }
 
-    fn compute_sse(&self, sse: i32, data: &Vec<i32>) -> i32 {
-        sse
+    fn compute_sse(&self, sse: i32, data: &Vec<i32>)  {
+    
     }
 
-    fn compute_centroid(data: &Vec<i32>) -> Vec<i32> {}
+    fn compute_centroid(data: &Vec<i32>)  {
+        
+    }
 
-    fn converge(sse: i32) -> Result {}
+    fn converge(sse: i32)  {
+
+    }
 }
 
 
 fn main() {
     let data = vec![1, 2, 3, 4, 5, 6, 7];
-    print!("The means is {}\n", compute_means(&data));
 }
