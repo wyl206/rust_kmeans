@@ -3,14 +3,14 @@ use std::collections::BTreeMap;
 
 struct Kmeans {
     k: u8,  // k means
-    mut sse: u32,  // sse 
-    mut center: BTreeMap<u8, Vec<i32>>, // k center
+    sse: u32,  // sse 
+    center: BTreeMap<u8, Vec<i32>>, // k center
     data: BTreeMap<u32, Vec<i32>>,  // n data
-    mut class: Vec<u8>,  // the k class of n data 
+    class: Vec<u8>,  // the k class of n data 
 }
 
 impl Kmeans {
-    fn New(&self) {
+    fn New(&mut self) {
         self.k = 2; // defalut 2 kmeans
         self.class = vec![0; 2]; 
     }
@@ -23,9 +23,9 @@ impl Kmeans {
     }
 
 
-    fn compute_means(&self, da: &Vec<i32>) -> i32 {  // 距离metric计算函数
+    fn compute_means(&self) -> i32 {  // 距离metric计算函数
         let mut sum: i32 = 0;
-        for i in da.iter() {
+        for i in self.data.iter() {
             sum += i.pow(2);
         }
         sum
