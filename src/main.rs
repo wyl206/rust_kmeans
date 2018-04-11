@@ -3,23 +3,25 @@ use std::collections::BTreeMap;
 
 struct Kmeans {
     k: u8,  // k means
-    mut sse: u32,  // sse 
-    mut center: BTreeMap<u8, Vec<i32>>, // k center
+    datanum: u32,
+    sse: u32,  // sse 
+    center: BTreeMap<u8, Vec<i32>>, // k center
     data: BTreeMap<u32, Vec<i32>>,  // n data
-    mut class: Vec<u8>,  // the k class of n data 
+    class: Vec<u8>,  // the k class of n data 
 }
 
 impl Kmeans {
-    fn New(&self) {
+    fn New(&mut self) {
         self.k = 2; // defalut 2 kmeans
         self.class = vec![0; 2]; 
     }
-    fn input_data(&self, i:u32, one_row:Vec<i32>) { //初始化data输入
- 
+    fn input_data(&mut self, i:u32, one_row:Vec<i32>) { //初始化data输入
+        self.data.entry(i).or_insert(one_row);
     }
 
-    fn init(&self) {  //初始化kmeans需要的环境变量
-
+    fn init(&mut self) {  //初始化kmeans需要的环境变量
+        self.sse = 0;
+        
     }
 
 
