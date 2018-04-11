@@ -1,4 +1,6 @@
 // machine learning for unsupervised kmeans
+extern crate rand;
+
 use std::collections::BTreeMap;
 use rand::{Rng, thread_rng};
 
@@ -12,14 +14,14 @@ struct Kmeans {
 }
 
 impl Kmeans {
-    fn New(&mut self, def_k:u8=2) {
+    fn New(&mut self, def_k:u8) {
         self.k = def_k; // defalut 2 kmeans
-        self.class = vec![0; 2];
+        self.class = Vec::with_capacity(def_k as usize);
         self.datanum = 0; 
         self.sse = 1;
     }
     fn input_data(&mut self, onedata:&Vec<i32>) { //初始化data输入
-        self.data.entry(self.datanum).or_insert(onedata);
+        self.data.entry(self.datanum).or_insert(*onedata);
         self.datanum += 1;
     }
 
@@ -39,7 +41,6 @@ impl Kmeans {
     fn compute_means(&self) -> i32 {  // 距离metric计算函数
         let mut sum: i32 = 0;
         for i in self.data.iter() {
-            sum += i.pow(2);
         }
         sum
     }
