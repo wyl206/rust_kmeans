@@ -58,12 +58,44 @@ impl Kmeans {
         sum as u32
     }
 
-    fn determine_class(&self) {  // 决定每个样本属于哪一类
+    fn determine_class(&mut self) {  // 决定每个样本属于哪一类
+        let mut min_distance: u32  = self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
+        *self.class[0] = 0;        
+        for i in 0..self.datanum {
+            for j in 0..self.k{
+               let temp_distance = self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
+               if temp_distance < min_distance {
+                   min_distance = temp_distance;
+                   self.class[i as usize ] = j;  // 如果到第j个轴最短，则是属于第j个类
+               }
+            }
+        }
 
     }
     
-    fn compute_centroid(&self)  { // 计算每个类的中心轴
-        
+    fn add_data(&self, v1:&mut Vec<i32>, v2:&Vec<i32>) {  // 对两个数据进行相加
+        for i in 0..self.datadim{
+            let j:usize = i;
+            *v1[j] = *v1[j] + *v2[j]
+        }
+    }
+
+    fn compute_centroid(&mut self)  { // 计算每个类的中心轴
+       let classnum = Vec<u32>.with_capacity(self.k); // 每个类里的元素，总共k个类
+       self.center.clear();
+       for i in 0..self.datanum {
+           for j in 0..self.datadim {
+               self.add_data( self.center.get_mut(self.class[i as usize]).unwrap(), self.data.get(&i).unwrap());  // 把数据加起来
+               classnum[self.class[i as usize] as usize] += 1; // 计算类的元素个数+1
+           }
+       }
+       for i:usize in 0..self.k {  //把平均值算出来
+           let total = self.classnum[i];
+           if total != 0 {
+                self.center.get_mut(&i).unwrap() ./= total; 
+           }
+       }
+
     }
 
 
