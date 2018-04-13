@@ -60,7 +60,7 @@ impl Kmeans {
 
     fn determine_class(&mut self) {  // 决定每个样本属于哪一类
         let mut min_distance: u32  = self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
-        *self.class[0] = 0;        
+        self.class[0] = 0;        
         for i in 0..self.datanum {
             for j in 0..self.k{
                let temp_distance = self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
@@ -73,37 +73,51 @@ impl Kmeans {
 
     }
     
-    fn add_data(&self, v1:&mut Vec<i32>, v2:&Vec<i32>) {  // 对两个数据进行相加
+    fn add_data(&self, v1:&Vec<i32>, v2:&Vec<i32>) -> Vec<i32> {  // 对两个数据进行相加
+        let mut v = Vec::new();
         for i in 0..self.datadim{
-            let j:usize = i;
-            *v1[j] = *v1[j] + *v2[j]
+            let j:usize = i as usize;
+            v[j] = v1[j] + v2[j];
         }
+        v
+    }
+
+    fn divide_num(&self, v1:&Vec<i32>, total:i32) -> Vec<i32>{
+        let mut v = Vec::new();
+        let mut u:usize = 0;
+        for i in v1 {
+            v[u] = *i/total;
+            u += 1;
+        }
+        v
     }
 
     fn compute_centroid(&mut self)  { // 计算每个类的中心轴
-       let classnum = Vec<u32>.with_capacity(self.k); // 每个类里的元素，总共k个类
+       let mut classnum = Vec::new(); // 每个类里的元素，总共k个类
        self.center.clear();
        for i in 0..self.datanum {
            for j in 0..self.datadim {
-               self.add_data( self.center.get_mut(self.class[i as usize]).unwrap(), self.data.get(&i).unwrap());  // 把数据加起来
+               let k = self.class[i as usize]; // 找到是第几类
+               let v = self.add_data( self.center.get(&k).unwrap(), self.data.get(&i).unwrap());  // 把数据加起来
+               self.center.insert(k, v);
                classnum[self.class[i as usize] as usize] += 1; // 计算类的元素个数+1
            }
        }
-       for i:usize in 0..self.k {  //把平均值算出来
-           let total = self.classnum[i];
-           if total != 0 {
-                self.center.get_mut(&i).unwrap() ./= total; 
-           }
-       }
-
+       for i in 0..self.k {  //把平均值算出来
+           let total = classnum.get(i as usize).unwrap();
+           if *total != 0 {
+               let v = self.divide_num(self.center.get(&i).unwrap(), *total);
+               self.center.insert(i,v);
+            }
+        }
     }
 
 
     fn converge(&self)  {  //判断是否收敛
 
     }
-}
 
+}
 
 fn main() {
     let data = vec![1, 2, 3, 4, 5, 6, 7];
