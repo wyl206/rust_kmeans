@@ -4,20 +4,19 @@ extern crate rand;
 use std::collections::BTreeMap;
 use rand::{thread_rng, Rng};
 
-struct Kmeans {
+struct  Kmeans<'a>{
     k: u8,                          // k means
     sse: u32,                       // sse
-    center: BTreeMap<u8, Vec<i32>>, // k center
-    data: BTreeMap<u32, Vec<i32>>,  // n data
+    center: &'a mut BTreeMap<u8, Vec<i32>>, // k center
+    data: &'a mut BTreeMap<u32, Vec<i32>>,  // n data
     datanum: u32,                   // number of data
     datadim: u8,                    //dimension of data
-    class: Vec<u8>,                 // the k class of n data
+    class: &'a mut Vec<u8>,                 // the k class of n data
 }
 
-impl Kmeans {
+impl<'a>  Kmeans<'a> {
     fn new(&mut self, def_k: u8, def_dim: u8) {
         self.k = def_k; // defalut 2 kmeans
-        self.class = Vec::with_capacity(def_k as usize);
         self.datanum = 0;
         self.sse = 1;
         self.datadim = def_dim;
@@ -103,12 +102,10 @@ impl Kmeans {
         let mut classnum = Vec::new(); // 每个类里的元素，总共k个类
         self.center.clear();
         for i in 0..self.datanum {
-            for j in 0..self.datadim {
                 let k = self.class[i as usize]; // 找到是第几类
                 let v = self.add_data(self.center.get(&k).unwrap(), self.data.get(&i).unwrap()); // 把数据加起来
                 self.center.insert(k, v);
                 classnum[self.class[i as usize] as usize] += 1; // 计算类的元素个数+1
-            }
         }
         for i in 0..self.k {
             //把平均值算出来
@@ -122,5 +119,31 @@ impl Kmeans {
 }
 
 fn main() {
-    let data = vec![1, 2, 3, 4, 5, 6, 7];
+    // 先定义几个向量
+    let k = 2;
+    let datanum = 10;
+    let datadim =2;
+    let mut center = BTreeMap::new();
+    let mut data = BTreeMap::new();
+    let mut class = Vec::new();
+    let mut k_sk = Kmeans{k:k, sse:0, center:&mut center, data:&mut data, datanum:datanum, datadim:datadim, class:&mut class};
+    k_sk.new(k,datadim);
+    k_sk.init();
+    let mut precise:f32 = 1.0;
+    let mut loops = 0;
+    let mut lastsse = 1;
+    while precise > 1e-4 || loops < 10000 { // 循环结束条件
+        
+        k_sk.determine_class(); // 计算每个点属于类别
+        let sse = k_sk.compute_sse(); //计算sse
+        precise = sse as f32 / lastsse as f32;
+        loops += 1;
+        if !(sse == 0) {
+            lastsse = sse; //替换sse
+        }else {
+            lastsse =1;
+        }
+        k_sk.compute_centroid(); //计算中心轴
+    }
+
 }
