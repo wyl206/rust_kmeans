@@ -7,8 +7,8 @@ use rand::{thread_rng, Rng};
 struct Kmeans<'a> {
     k: u8,                                  // k means
     sse: u32,                               // sse
-    center: &'a mut BTreeMap<u8, Vec<i32>>, // k center
-    data: &'a mut BTreeMap<u32, Vec<i32>>,  // n data
+    center: &'a mut BTreeMap<u8, Vec<f32>>, // k center
+    data: &'a mut BTreeMap<u32, Vec<f32>>,  // n data
     datanum: u32,                           // number of data
     datadim: u8,                            //dimension of data
     class: &'a mut Vec<u8>,                 // the k class of n data
@@ -21,7 +21,7 @@ impl<'a> Kmeans<'a> {
         self.sse = 1;
         self.datadim = def_dim;
     }
-    fn input_data(&mut self, onedata: &Vec<i32>) {
+    fn input_data(&mut self, onedata: &Vec<f32>) {
         //初始化data输入
         self.data.entry(self.datanum).or_insert(onedata.to_vec());
         self.datanum += 1;
@@ -33,14 +33,14 @@ impl<'a> Kmeans<'a> {
         let mut rng = thread_rng();
         for i in 0..self.k {
             let center_loc = rng.gen_range(0, self.datanum); // 随机产生每个类的初始中心轴的序号
-            let temp_center: Vec<i32> = self.data.get(&center_loc).unwrap().to_vec(); //找出序号对应的数据
+            let temp_center: Vec<f32> = self.data.get(&center_loc).unwrap().to_vec(); //找出序号对应的数据
             self.center.entry(i).or_insert(temp_center); //放到对应的类中
         }
     }
 
-    fn compute_sse(&self) -> u32 {
+    fn compute_sse(&self) -> f32 {
         // 距离metric计算函数
-        let mut sum: u32 = 0;
+        let mut sum: f32 = 0.0;
         for i in 0..self.datanum {
             let class_i = self.class[i as usize];
             let data_i = self.data.get(&i).unwrap();
@@ -49,25 +49,25 @@ impl<'a> Kmeans<'a> {
         sum
     }
 
-    fn compute_distance(&self, v1: &Vec<i32>, v2: &Vec<i32>) -> u32 {
+    fn compute_distance(&self, v1: &Vec<f32>, v2: &Vec<f32>) -> f32 {
         //计算两个数据之间的距离
-        let mut sum: i32 = 0;
+        let mut sum: f32 = 0.0;
         for i in 0..self.datadim {
             let j = i as usize;
-            sum += (v1[j] - v2[j]).pow(2);
+            sum += (v1[j] - v2[j]).powf(2.0);
         }
-        sum as u32
+        sum
     }
 
     fn determine_class(&mut self) {
         // 决定每个样本属于哪一类
-        let mut min_distance: u32 =
-            self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
-        self.class[0] = 0;
         for i in 0..self.datanum {
-            for j in 0..self.k {
+            let mut min_distance: f32 =
+                self.compute_distance(self.data.get(&i).unwrap(), self.center.get(&0).unwrap());
+            self.class[i as usize] = 0;
+            for j in 1..self.k {
                 let temp_distance =
-                    self.compute_distance(self.data.get(&0).unwrap(), self.center.get(&0).unwrap());
+                    self.compute_distance(self.data.get(&i).unwrap(), self.center.get(&j).unwrap());
                 if temp_distance < min_distance {
                     min_distance = temp_distance;
                     self.class[i as usize] = j; // 如果到第j个轴最短，则是属于第j个类
@@ -76,7 +76,7 @@ impl<'a> Kmeans<'a> {
         }
     }
 
-    fn add_data(&self, v1: &Vec<i32>, v2: &Vec<i32>) -> Vec<i32> {
+    fn add_data(&self, v1: &Vec<f32>, v2: &Vec<f32>) -> Vec<f32> {
         // 对两个数据进行相加
         let mut v = Vec::new();
         for i in 0..self.datadim {
@@ -86,10 +86,10 @@ impl<'a> Kmeans<'a> {
         v
     }
 
-    fn divide_num(&self, v1: &Vec<i32>, total: i32) -> Vec<i32> {
+    fn divide_num(&self, v1: &Vec<f32>, total: i32) -> Vec<f32> {
         let mut v = Vec::new();
         for i in v1 {
-            v.push(*i / total);
+            v.push(*i / total as f32);
         }
         v
     }
@@ -98,7 +98,7 @@ impl<'a> Kmeans<'a> {
         // 计算每个类的中心轴
         let mut classnum = Vec::with_capacity(self.k as usize); // 每个类里的元素，总共k个类
         for i in 0..self.k {
-            self.center.insert(i, vec![0;self.datadim as usize]);
+            self.center.insert(i, vec![0.0; self.datadim as usize]);
             classnum.push(0);
         }
         for i in 0..self.datanum {
@@ -137,25 +137,25 @@ fn main() {
     };
     k_sk.new(k, datadim);
     // 输入数据
-    k_sk.input_data(&vec![1,1]);
-    k_sk.input_data(&vec![1,2]);
-    k_sk.input_data(&vec![4,3]);
-    k_sk.input_data(&vec![4,4]);
+    k_sk.input_data(&vec![1.0, 1.0]);
+    k_sk.input_data(&vec![1.0, 2.0]);
+    k_sk.input_data(&vec![4.0, 3.0]);
+    k_sk.input_data(&vec![4.0, 4.0]);
     //输入数据
     k_sk.init();
     let mut precise: f32 = 1.0;
     let mut loops = 0;
-    let mut lastsse = 1;
+    let mut lastsse = 1.0;
     while (precise > 1e-4) && (loops < 10000) {
         // 循环结束条件
         k_sk.determine_class(); // 计算每个点属于类别
         let sse = k_sk.compute_sse(); //计算sse
-        precise =(1.0 - sse as f32 / lastsse as f32).abs();
+        precise = (1.0 - sse as f32 / lastsse as f32).abs();
         loops += 1;
-        if !(sse == 0) {
+        if !(sse == 0.0) {
             lastsse = sse; //替换sse
         } else {
-            lastsse = 1;
+            lastsse = 1.0;
         }
         k_sk.compute_centroid(); //计算中心轴
     }
