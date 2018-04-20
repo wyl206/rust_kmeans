@@ -124,7 +124,7 @@ fn main() {
     let datadim = 2;
     let mut center = BTreeMap::new();
     let mut data = BTreeMap::new();
-    let mut class = Vec::new();
+    let mut class = Vec::with_capacity(datanum as usize);
     let mut k_sk = Kmeans {
         k: k,
         sse: 0,
@@ -136,7 +136,10 @@ fn main() {
     };
     k_sk.new(k, datadim);
     // 输入数据
-
+    k_sk.input_data(&vec![1,1]);
+    k_sk.input_data(&vec![2,2]);
+    k_sk.input_data(&vec![3,3]);
+    k_sk.input_data(&vec![4,4]);
     //输入数据
     k_sk.init();
     let mut precise: f32 = 1.0;
