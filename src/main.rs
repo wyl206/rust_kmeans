@@ -139,8 +139,8 @@ fn main() {
     // 输入数据
     k_sk.input_data(&vec![1.0, 1.0]);
     k_sk.input_data(&vec![1.0, 2.0]);
-    k_sk.input_data(&vec![4.0, 3.0]);
-    k_sk.input_data(&vec![4.0, 4.0]);
+    k_sk.input_data(&vec![2.0, 1.0]);
+    k_sk.input_data(&vec![2.0, 2.0]);
     //输入数据
     k_sk.init();
     let mut precise: f32 = 1.0;
@@ -158,6 +158,9 @@ fn main() {
             lastsse = 1.0;
         }
         k_sk.compute_centroid(); //计算中心轴
+        println!("precise: {:}", precise);
+        println!("sse {:}", sse);
     }
+    println!("{:?}", k_sk.data);
     println!("{:?} \n {:?}", k_sk.class, k_sk.center);
 }
