@@ -1,3 +1,5 @@
+//! 提供Kmeans所需要的类
+
 extern crate rand;
 
 use std::collections::BTreeMap;
