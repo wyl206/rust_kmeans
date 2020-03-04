@@ -22,10 +22,10 @@ fn main() {
     };
     k_sk.new(k, datadim);
     // 输入数据
-    k_sk.input_data(&vec![1.0, 1.0]);
     k_sk.input_data(&vec![1.0, 2.0]);
-    k_sk.input_data(&vec![2.0, 1.0]);
-    k_sk.input_data(&vec![2.0, 2.0]);
+    k_sk.input_data(&vec![2.3, 3.0]);
+    k_sk.input_data(&vec![6.0, 6.0]);
+    k_sk.input_data(&vec![2.0, 7.4]);
     //输入数据
     k_sk.init();
     let mut precise: f32 = 1.0;
